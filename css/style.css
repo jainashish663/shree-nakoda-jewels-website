@@ -56,10 +56,15 @@ a { color: inherit; text-decoration: none; }
   position: fixed; inset: 0; background: #0b0a08; z-index: 10000;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 18px; transition: opacity .8s var(--ease), visibility .8s var(--ease);
+  /* FAILSAFE: this overlay covers the whole site and is normally removed by JS.
+     If JS is disabled, fails to load, or throws, this animation still clears it
+     so visitors can never be left staring at a blank screen. */
+  animation: preloader-failsafe .6s var(--ease) 3s forwards;
 }
 .preloader-mark img { animation: pulse-logo 1.8s ease-in-out infinite; filter: drop-shadow(0 0 18px rgba(212,175,55,0.35)); }
-#preloader.done { opacity: 0; visibility: hidden; }
+#preloader.done { opacity: 0; visibility: hidden; pointer-events: none; }
 @keyframes pulse-logo { 0%, 100% { transform: scale(1); opacity: .85; } 50% { transform: scale(1.06); opacity: 1; } }
+@keyframes preloader-failsafe { to { opacity: 0; visibility: hidden; pointer-events: none; } }
 
 /* ============ Layout helpers ============ */
 .section-inner { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
@@ -93,6 +98,14 @@ p { line-height: 1.75; color: var(--ink-dim); margin: 0 0 16px; font-weight: 300
   transition: opacity 1s var(--ease), transform 1s var(--ease);
 }
 .reveal-up.in-view { opacity: 1; transform: translateY(0); }
+
+/* FAILSAFE: .reveal-up starts invisible and is normally revealed by JS on scroll.
+   main.js adds .js-ready to <html> the moment it runs, so this rule only applies when
+   the script is disabled, blocked, or failed to load — in which case reveal everything
+   rather than leaving the visitor a blank page. */
+html:not(.js-ready) .reveal-up { animation: reveal-failsafe .8s var(--ease) 2.5s forwards; }
+@keyframes reveal-failsafe { to { opacity: 1; transform: none; } }
+
 .delay-1.in-view { transition-delay: .08s; }
 .delay-2.in-view { transition-delay: .18s; }
 .delay-3.in-view { transition-delay: .28s; }
@@ -185,7 +198,10 @@ p { line-height: 1.75; color: var(--ink-dim); margin: 0 0 16px; font-weight: 300
   white-space: nowrap; display: flex; align-items: center; gap: 20px;
 }
 .marquee-track .dot { color: var(--gold); font-size: 10px; }
-@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* NOTE: the track is two identical halves, but flex `gap` puts N-1 gaps in the total
+   width while one full repeat is N items + N gaps. So -50% lands short by exactly
+   gap/2 and the loop visibly jumps. Offset by gap/2 (20px / 2 = 10px) for a seamless loop. */
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(calc(-50% - 10px)); } }
 
 /* ============ Tilt Card (used for images) ============ */
 .tilt-card { perspective: 1400px; }
@@ -208,9 +224,8 @@ p { line-height: 1.75; color: var(--ink-dim); margin: 0 0 16px; font-weight: 300
 .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: center; }
 .about-visual { position: relative; }
 .floating-badge {
-  position: absolute; bottom: -26px; right: -26px; background: var(--bg-alt);
+  position: absolute; bottom: -26px; right: -26px; z-index: 2; background: var(--bg-alt);
   border: 1px solid var(--line); padding: 20px 26px; text-align: center; border-radius: 3px;
-  transform: translateZ(60px);
   box-shadow: 0 20px 40px -15px rgba(0,0,0,0.6);
 }
 .floating-badge strong { display: block; font-family: var(--display); font-size: 26px; color: var(--gold); }
@@ -225,7 +240,11 @@ p { line-height: 1.75; color: var(--ink-dim); margin: 0 0 16px; font-weight: 300
 .craft { position: relative; padding: 130px 0; overflow: hidden; }
 .craft-bg-image {
   position: absolute; inset: 0; background-size: cover; background-position: center;
-  background-attachment: fixed;
+}
+/* Parallax only where it actually works. iOS Safari mis-renders background-attachment:fixed
+   (janky / wrong scale), and most visitors here are on mobile. */
+@media (min-width: 981px) and (hover: hover) {
+  .craft-bg-image { background-attachment: fixed; }
 }
 .craft-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,10,8,0.94), rgba(11,10,8,0.88) 40%, rgba(11,10,8,0.97)); }
 .craft .section-inner { position: relative; z-index: 2; }
@@ -296,7 +315,8 @@ p { line-height: 1.75; color: var(--ink-dim); margin: 0 0 16px; font-weight: 300
 }
 .ig-follow:hover { border-color: var(--gold); background: rgba(212,175,55,.08); transform: translateY(-2px); }
 .gallery .section-inner { display: flex; flex-direction: column; align-items: center; }
-@keyframes gallery-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* Same gap/2 correction as the marquee above (22px / 2 = 11px). */
+@keyframes gallery-scroll { from { transform: translateX(0); } to { transform: translateX(calc(-50% - 11px)); } }
 
 /* ============ Contact ============ */
 .contact { position: relative; padding: 130px 0 110px; }
@@ -361,4 +381,25 @@ p { line-height: 1.75; color: var(--ink-dim); margin: 0 0 16px; font-weight: 300
   .about-stats { gap: 26px; }
   .floating-badge { right: 0; bottom: -20px; padding: 14px 18px; }
   .contact-row { grid-template-columns: 1fr; }
+}
+
+/* ============ Reduced motion ============
+   This site leans heavily on continuous motion (marquee, gallery strip, 3D hero,
+   pulsing preloader). Respect users who ask the OS to minimise animation. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  .marquee-track,
+  .gallery-track,
+  .preloader-mark img,
+  .scroll-line i { animation: none !important; }
+
+  /* Reveal-on-scroll must not leave content invisible when transitions are cut. */
+  .reveal-up { opacity: 1 !important; transform: none !important; transition: none !important; }
+
+  .tilt-inner, .card-3d, .gallery-item img { transition: none !important; }
+  .gallery-item:hover img, .card-3d:hover { transform: none !important; }
+
+  /* The preloader failsafe must still run — keep its animation, just make it instant. */
+  #preloader { animation-duration: .01ms; }
 }

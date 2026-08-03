@@ -1,12 +1,24 @@
 /* ============ Shree Nakoda Jewels — Interactions ============ */
 
-document.getElementById('year').textContent = new Date().getFullYear();
+/* Tells CSS that JS is alive. Without this class the stylesheet falls back to
+   revealing all .reveal-up content, so a blocked/failed script can't blank the page. */
+document.documentElement.classList.add('js-ready');
 
-/* ---------- Preloader ---------- */
-window.addEventListener('load', () => {
+/* ---------- Preloader ----------
+   Registered FIRST, and defensively, so nothing later in this file can throw and
+   leave the full-screen overlay stuck covering the site. CSS also has a failsafe
+   (see #preloader animation) in case this script never runs at all. */
+(function () {
   const pre = document.getElementById('preloader');
-  setTimeout(() => pre.classList.add('done'), 500);
-});
+  if (!pre) return;
+  const dismiss = () => pre.classList.add('done');
+  window.addEventListener('load', () => setTimeout(dismiss, 500));
+  // Don't let a slow or blocked resource trap the visitor behind the overlay.
+  setTimeout(dismiss, 3000);
+})();
+
+const yearEl = document.getElementById('year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 /* ---------- Header scroll state ---------- */
 const header = document.getElementById('site-header');
@@ -17,8 +29,12 @@ window.addEventListener('scroll', () => {
 /* ---------- Mobile nav ---------- */
 const navToggle = document.getElementById('nav-toggle');
 const mainNav = document.getElementById('main-nav');
-navToggle.addEventListener('click', () => mainNav.classList.toggle('open'));
-mainNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mainNav.classList.remove('open')));
+function setNavOpen(open) {
+  mainNav.classList.toggle('open', open);
+  navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+navToggle.addEventListener('click', () => setNavOpen(!mainNav.classList.contains('open')));
+mainNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setNavOpen(false)));
 
 /* ---------- Cursor glow ---------- */
 const glow = document.getElementById('cursor-glow');

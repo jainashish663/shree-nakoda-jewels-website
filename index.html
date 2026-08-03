@@ -5,6 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shree Nakoda Jewels | Elegance in Every Piece</title>
 <meta name="description" content="Shree Nakoda Jewels — leading manufacturer of super lightweight CZ casting jewelry. In-house manufacturing, multiple QC stages, 50,000+ designs.">
+<link rel="canonical" href="https://shreenakodajewels.com/">
+
+<!-- Link previews (WhatsApp, Instagram DM, Facebook, X) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shree Nakoda Jewels">
+<meta property="og:title" content="Shree Nakoda Jewels | Elegance in Every Piece">
+<meta property="og:description" content="Leading manufacturer of super lightweight CZ casting jewelry. In-house manufacturing, multiple QC stages, and over 50,000 designs in 22KT & 18KT gold.">
+<meta property="og:url" content="https://shreenakodajewels.com/">
+<meta property="og:image" content="https://shreenakodajewels.com/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Shree Nakoda Jewels — Elegance in Every Piece">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Shree Nakoda Jewels | Elegance in Every Piece">
+<meta name="twitter:description" content="Leading manufacturer of super lightweight CZ casting jewelry — in-house crafted, quality assured.">
+<meta name="twitter:image" content="https://shreenakodajewels.com/assets/img/og-image.jpg">
+<meta name="theme-color" content="#0b0a08">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Marcellus&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -12,6 +31,12 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
 <link rel="icon" type="image/png" sizes="64x64" href="assets/img/favicon-64.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+<!-- Without JS the preloader overlay is never dismissed and scroll-reveal content never
+     un-hides, which would leave the whole site blank. Show everything immediately. -->
+<noscript><style>
+  #preloader{display:none !important}
+  .reveal-up{opacity:1 !important;transform:none !important;animation:none !important}
+</style></noscript>
 </head>
 <body>
 
@@ -43,7 +68,7 @@
       </a>
       <a href="#contact" class="nav-cta">Contact</a>
     </nav>
-    <button id="nav-toggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    <button id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span></button>
   </div>
 </header>
 
@@ -99,10 +124,11 @@
       <div class="tilt-inner">
         <img src="assets/img/necklace-floral.jpg" alt="Handcrafted CZ floral necklace by Shree Nakoda Jewels" loading="lazy">
         <div class="visual-frame"></div>
-        <div class="floating-badge">
-          <strong>50,000+</strong>
-          <span>Unique Designs</span>
-        </div>
+      </div>
+      <!-- Sits outside .tilt-inner: that element clips (overflow:hidden) and would cut the badge off. -->
+      <div class="floating-badge">
+        <strong>50,000+</strong>
+        <span>Unique Designs</span>
       </div>
     </div>
     <div class="about-copy">
@@ -408,7 +434,9 @@
   </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/main.js"></script>
+<!-- Both deferred: keeps them off the parsing critical path. Deferred scripts run in
+     document order, so THREE is always defined before main.js needs it. -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script defer src="js/main.js"></script>
 </body>
 </html>
