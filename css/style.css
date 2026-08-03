@@ -130,6 +130,9 @@ p { line-height: 1.75; color: var(--ink-dim); margin: 0 0 16px; font-weight: 300
   border: 1px solid var(--line); padding: 9px 20px; border-radius: 2px; color: var(--gold-soft) !important;
 }
 .nav-cta:hover { background: rgba(212,175,55,0.1); border-color: var(--gold); }
+.nav-ig { display: inline-flex; align-items: center; color: var(--gold-soft) !important; transition: color .3s, transform .3s var(--ease); }
+.nav-ig::after { display: none !important; }
+.nav-ig:hover { color: var(--gold) !important; transform: translateY(-2px); }
 
 #nav-toggle {
   display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 6px;
@@ -154,7 +157,13 @@ p { line-height: 1.75; color: var(--ink-dim); margin: 0 0 16px; font-weight: 300
 .hero-line { display: block; }
 .hero-line em { font-style: italic; color: var(--gold); }
 .hero-sub { max-width: 480px; font-size: 17px; margin-bottom: 34px; }
-.hero-actions { display: flex; gap: 18px; flex-wrap: wrap; }
+.hero-actions { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+.hero-ig {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13px; letter-spacing: 1px; color: var(--ink-dim);
+  transition: color .3s var(--ease);
+}
+.hero-ig:hover { color: var(--gold); }
 
 .scroll-cue {
   position: absolute; bottom: 38px; left: 50%; transform: translateX(-50%); z-index: 2;
@@ -186,7 +195,9 @@ p { line-height: 1.75; color: var(--ink-dim); margin: 0 0 16px; font-weight: 300
   box-shadow: 0 40px 80px -30px rgba(0,0,0,0.7);
   background: linear-gradient(160deg, #1c1712, #0d0b08);
 }
-.tilt-inner img { width: 100%; height: 100%; object-fit: cover; object-position: center; aspect-ratio: 2/1; transform: translateZ(20px); }
+/* Photo cards only — must not catch the logo inside the contact card */
+.about-visual .tilt-inner img,
+.why-visual .tilt-inner img { width: 100%; height: 100%; object-fit: cover; object-position: center; aspect-ratio: 2/1; transform: translateZ(20px); }
 .visual-frame {
   position: absolute; inset: 14px; border: 1px solid rgba(244,239,230,0.35); pointer-events: none;
   transform: translateZ(40px);
@@ -254,15 +265,37 @@ p { line-height: 1.75; color: var(--ink-dim); margin: 0 0 16px; font-weight: 300
 .gallery { padding: 130px 0 100px; overflow: hidden; }
 .gallery .section-inner { margin-bottom: 50px; }
 .gallery-strip { width: 100%; overflow: hidden; }
-.gallery-track { display: flex; gap: 22px; width: max-content; animation: gallery-scroll 46s linear infinite; }
+.gallery-track { display: flex; gap: 22px; width: max-content; animation: gallery-scroll 72s linear infinite; }
 .gallery-track:hover { animation-play-state: paused; }
 .gallery-item {
-  width: 640px; height: 230px; border-radius: 4px; overflow: hidden; flex-shrink: 0;
-  border: 1px solid var(--line); position: relative;
+  width: 300px; height: 300px; border-radius: 4px; overflow: hidden; flex-shrink: 0;
+  border: 1px solid var(--line); position: relative; display: block;
   background: linear-gradient(160deg, #1c1712, #0d0b08);
 }
 .gallery-item img { width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform .6s var(--ease); }
 .gallery-item:hover img { transform: scale(1.06); }
+.gallery-badge {
+  position: absolute; top: 12px; right: 12px; color: #fff; opacity: 0;
+  display: flex; transition: opacity .35s var(--ease);
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.6));
+}
+.gallery-item:hover .gallery-badge { opacity: 1; }
+.gallery-item::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,.25), transparent 45%);
+  opacity: 0; transition: opacity .35s var(--ease);
+}
+.gallery-item:hover::after { opacity: 1; }
+
+/* Follow button under the gallery heading */
+.ig-follow {
+  display: inline-flex; align-items: center; gap: 9px; margin: 4px auto 0;
+  padding: 11px 24px; border: 1px solid var(--line); border-radius: 40px;
+  font-size: 12.5px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--gold-soft); transition: all .35s var(--ease);
+}
+.ig-follow:hover { border-color: var(--gold); background: rgba(212,175,55,.08); transform: translateY(-2px); }
+.gallery .section-inner { display: flex; flex-direction: column; align-items: center; }
 @keyframes gallery-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 /* ============ Contact ============ */
@@ -286,7 +319,10 @@ p { line-height: 1.75; color: var(--ink-dim); margin: 0 0 16px; font-weight: 300
 .contact-card-inner {
   background: var(--bg-alt); border: 1px solid var(--line); padding: 48px 38px; text-align: center; border-radius: 4px;
 }
-.contact-mark { margin-bottom: 18px; }
+.contact-mark {
+  width: 84px; height: 84px; object-fit: contain; aspect-ratio: auto;
+  display: block; margin: 0 auto 18px;
+}
 .contact-card h3 { color: var(--ink); }
 .tagline { font-family: var(--serif); font-style: italic; color: var(--gold-soft); font-size: 18px; margin-top: 6px; }
 .contact-card-line { width: 40px; height: 1px; background: var(--gold); margin: 22px auto; }
