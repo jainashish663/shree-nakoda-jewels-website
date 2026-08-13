@@ -27,7 +27,7 @@
   --ease:cubic-bezier(.19,1,.22,1);
   --pad:clamp(22px,6vw,110px);
   --maxw:1380px;
-  --gap:clamp(110px,15vw,240px);
+  --gap:clamp(78px,9vw,140px);   /* was 110-240px — read as dead space */
 }
 
 *{box-sizing:border-box}
@@ -95,8 +95,9 @@ html:not(.js) .rv-line .l>span{transform:none}
   transition:background .45s var(--ease),padding .45s var(--ease),box-shadow .45s var(--ease);
 }
 #hdr.solid{background:rgba(244,241,234,.93);backdrop-filter:blur(10px);padding:9px var(--pad);box-shadow:0 1px 0 var(--line)}
-#hdr .brand img{width:42px;height:auto;transition:width .45s var(--ease)}
-#hdr.solid .brand img{width:34px}
+/* Logo carries fine linework and a wordmark — below ~56px it stops reading. */
+#hdr .brand img{width:clamp(56px,5vw,66px);height:auto;transition:width .45s var(--ease)}
+#hdr.solid .brand img{width:clamp(46px,4vw,54px)}
 #hdr nav{display:flex;gap:clamp(15px,2.4vw,34px)}
 #hdr nav a{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);transition:color .3s}
 #hdr nav a:hover{color:var(--bronze)}
@@ -112,17 +113,21 @@ html:not(.js) .rv-line .l>span{transform:none}
 
 /* Wide cinematic band */
 .bandfig{margin:0 auto;max-width:var(--maxw);padding:0 var(--pad)}
-.bandfig img{width:100%;aspect-ratio:3/1;object-fit:cover;background:var(--cream-2)}
+.bandfig img{width:100%;aspect-ratio:2.5/1;object-fit:cover;background:var(--cream-2)}
 
-/* ---------- 2 · About ---------- */
-.statement{max-width:var(--maxw);margin:0 auto;padding:var(--gap) var(--pad) 0}
-.statement h2{margin-bottom:clamp(34px,4vw,58px)}
-
-/* ---------- 3 · Specs — precision as typography ---------- */
-.specs{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(24px,4vw,60px);
-  max-width:var(--maxw);margin:0 auto;padding:var(--gap) var(--pad) 0;
+/* ---------- 2 · About + specs, side by side ----------
+   Previously the statement sat alone and the right 60% of the row was empty.
+   Pairing it with the spec figures fills the measure and removes a section. */
+.statement{
+  display:grid;grid-template-columns:1.22fr .78fr;gap:clamp(40px,5vw,84px);
+  align-items:center;max-width:var(--maxw);margin:0 auto;padding:var(--gap) var(--pad) 0;
 }
+/* narrower column was stranding "A" alone on its own line */
+.statement .display.md{font-size:clamp(29px,4.1vw,62px)}
+.statement h2{margin-bottom:clamp(28px,3.2vw,46px)}
+
+/* ---------- Specs — precision as typography ---------- */
+.specs{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(26px,3.4vw,46px)}
 .spec strong{
   display:block;font-family:var(--serif);font-weight:300;
   font-size:clamp(32px,4.2vw,58px);line-height:1;margin-bottom:14px;
@@ -144,13 +149,15 @@ html:not(.js) .rv-line .l>span{transform:none}
 .detail-cap p{font-size:14.5px;line-height:1.75;color:var(--muted)}
 
 /* ---------- 5 & 6 · Editorial pairs ---------- */
+/* Image column given more weight — at 1fr the photos read as undersized. */
 .pair{
-  display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,110px);
+  display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(32px,5vw,80px);
   align-items:center;max-width:var(--maxw);margin:0 auto;padding:var(--gap) var(--pad) 0;
 }
+.pair.reverse{grid-template-columns:.75fr 1.25fr}
 .pair.reverse .fig{order:2}
 .fig{margin:0;overflow:hidden;background:var(--cream-2)}
-.fig img{width:100%;aspect-ratio:1.6/1;object-fit:cover;transition:transform 1.4s var(--ease)}
+.fig img{width:100%;aspect-ratio:1.35/1;object-fit:cover;transition:transform 1.4s var(--ease)}
 .fig:hover img{transform:scale(1.03)}
 .pair-copy{display:flex;flex-direction:column;gap:20px}
 .pair-copy p:last-child{color:var(--muted);line-height:1.75;max-width:34ch;font-size:15.5px}
@@ -207,8 +214,9 @@ footer a:hover{color:var(--bronze)}
 
 /* ---------- Responsive ---------- */
 @media(max-width:980px){
+  .statement{grid-template-columns:1fr;gap:44px}
   .specs{grid-template-columns:repeat(2,1fr);gap:34px}
-  .pair{grid-template-columns:1fr;gap:30px}
+  .pair,.pair.reverse{grid-template-columns:1fr;gap:30px}
   .pair.reverse .fig{order:0}
   .range-grid{grid-template-columns:repeat(2,1fr);gap:20px}
   .visit-grid{grid-template-columns:1fr}
