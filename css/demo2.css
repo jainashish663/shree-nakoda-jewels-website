@@ -1,0 +1,285 @@
+/* ===== Shree Nakoda Jewels — Demo 2 (merged) =====
+   Keeps the live site's distinctive dark 3D hero + Instagram gallery +
+   Why-Us differentiators, then hands off to the cream editorial system
+   from demo.html for everything else. See demo.html comments for how the
+   two were reconciled. */
+
+:root{
+  /* dark, from the live site */
+  --dk-bg:#0b0a08;
+  --dk-ink:#f4efe6;
+  --dk-dim:#9a9184;
+  --dk-gold:#d4af37;      /* correct on dark backgrounds — do not use on cream */
+  --dk-gold-soft:#e8cf7a;
+  --dk-line:rgba(212,175,55,.18);
+
+  /* cream editorial, from demo.html */
+  --cream:#f4f1ea;
+  --cream-2:#eae5db;
+  --ink:#1a1815;
+  --muted:#6b6357;
+  --gold:#a8842c;          /* 3.10:1 on cream — large text only */
+  --bronze:#7a5f18;        /* 5.35:1 on cream — body-safe */
+  --line:rgba(26,24,21,.13);
+  --hair:rgba(168,132,44,.42);
+
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --ease:cubic-bezier(.19,1,.22,1);
+  --pad:clamp(22px,6vw,110px);
+  --maxw:1380px;
+  --gap:clamp(78px,9vw,140px);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--cream);color:var(--ink);
+  font-family:var(--sans);font-weight:300;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--gold);color:#fff}
+
+.paper{
+  position:fixed;inset:0;z-index:9997;pointer-events:none;opacity:.5;
+  mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E");
+}
+.demo-flag{
+  position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:9999;
+  background:rgba(26,24,21,.88);color:var(--cream);
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  padding:7px 16px;border-radius:40px;pointer-events:none;
+}
+
+/* ---------- Type ---------- */
+.display{
+  font-family:var(--serif);font-weight:300;
+  font-size:clamp(40px,7.6vw,120px);line-height:.97;letter-spacing:-.018em;
+  text-transform:uppercase;margin:0;
+}
+.display em{font-style:italic;text-transform:lowercase;color:var(--gold);letter-spacing:-.005em;padding-right:.05em}
+.display.md{font-size:clamp(31px,5vw,74px)}
+.display.sm{font-size:clamp(26px,3.5vw,50px)}
+.hero .display em{color:var(--dk-gold-soft)}  /* on the dark hero, use the dark-safe gold */
+
+.label{
+  font-size:10.5px;font-weight:400;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--bronze);margin:0 0 22px;
+}
+.lede{font-size:clamp(15px,1.5vw,18px);line-height:1.7;margin:0}
+.body-lg{
+  font-family:var(--serif);font-weight:300;
+  font-size:clamp(19px,2.3vw,32px);line-height:1.5;color:var(--ink);
+  max-width:34ch;margin:0;text-wrap:pretty;
+}
+p{margin:0}
+
+/* ---------- Reveal ---------- */
+.rv{opacity:0;transform:translateY(22px);transition:opacity 1.05s var(--ease),transform 1.05s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.rv-line .l{display:block;overflow:hidden}
+.rv-line .l>span{display:block;transform:translateY(105%);transition:transform 1.1s var(--ease)}
+.rv-line.in .l>span{transform:none}
+.rv-line.in .l:nth-child(2)>span{transition-delay:.09s}
+html:not(.js) .rv{opacity:1;transform:none}
+html:not(.js) .rv-line .l>span{transform:none}
+
+/* ---------- Header ----------
+   Sits on the dark hero at load, so it starts in its light/on-dark state
+   and crossfades to the cream/solid state once you scroll into the cream body. */
+#hdr{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px var(--pad);color:var(--dk-ink);
+  transition:background .45s var(--ease),padding .45s var(--ease),
+             box-shadow .45s var(--ease),color .45s var(--ease);
+}
+#hdr.solid{
+  background:rgba(244,241,234,.93);backdrop-filter:blur(10px);
+  padding:9px var(--pad);box-shadow:0 1px 0 var(--line);color:var(--ink);
+}
+#hdr .brand img{width:clamp(56px,5vw,66px);height:auto;transition:width .45s var(--ease)}
+#hdr.solid .brand img{width:clamp(46px,4vw,54px)}
+#hdr nav{display:flex;gap:clamp(15px,2.4vw,34px)}
+#hdr nav a{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dk-dim);transition:color .3s}
+#hdr.solid nav a{color:var(--muted)}
+#hdr nav a:hover{color:var(--dk-gold-soft)}
+#hdr.solid nav a:hover{color:var(--bronze)}
+
+/* ============================================================
+   1 · DARK 3D HERO — kept intact from the live site
+   ============================================================ */
+.hero{
+  position:relative;height:100vh;min-height:640px;display:flex;align-items:flex-end;
+  overflow:hidden;background:radial-gradient(ellipse at 70% 20%,#1a1610 0%,#0b0a08 60%);
+  color:var(--dk-ink);padding-bottom:clamp(70px,9vw,120px);
+}
+#hero-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.hero-vignette{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 30%,#0b0a08 92%);
+}
+.hero-inner{position:relative;z-index:2;max-width:var(--maxw);margin:0 auto;padding:0 var(--pad);width:100%}
+.hero h1{margin:0 0 clamp(28px,3.2vw,44px)}
+.hero-foot{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;
+  padding-top:clamp(20px,2.4vw,32px);border-top:1px solid var(--dk-line);
+}
+.hero-foot .lede{color:var(--dk-dim)}
+.since{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--dk-gold-soft)}
+
+/* Short gradient hand-off from the hero's near-black into the cream body,
+   so the transition reads as a considered edit, not a hard cut. */
+.turn{height:clamp(64px,9vw,120px);background:linear-gradient(180deg,#0b0a08,var(--cream))}
+
+/* ---------- 2 · About + specs ---------- */
+.statement{
+  display:grid;grid-template-columns:1.22fr .78fr;gap:clamp(40px,5vw,84px);
+  align-items:center;max-width:var(--maxw);margin:0 auto;padding:var(--gap) var(--pad) 0;
+}
+.statement .display.md{font-size:clamp(29px,4.1vw,62px)}
+.statement h2{margin-bottom:clamp(28px,3.2vw,46px)}
+.statement .body-lg{color:var(--ink)}
+.specs{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(26px,3.4vw,46px)}
+.spec strong{
+  display:block;font-family:var(--serif);font-weight:300;
+  font-size:clamp(32px,4.2vw,58px);line-height:1;margin-bottom:14px;
+  font-variant-numeric:lining-nums tabular-nums;
+}
+.spec strong sup{font-size:.42em;vertical-align:super;color:var(--gold);margin-left:.06em}
+.spec strong em{font-style:normal;font-size:.42em;color:var(--gold);margin-left:.08em}
+.spec span{
+  font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+  display:block;padding-top:12px;border-top:1px solid var(--hair);
+}
+
+/* ---------- 3 · Detail / craft proof ---------- */
+.detail{max-width:var(--maxw);margin:0 auto;padding:var(--gap) var(--pad) 0}
+.detail figure{margin:0;overflow:hidden;background:var(--cream-2)}
+.detail img{width:100%;aspect-ratio:2.2/1;object-fit:cover}
+.detail-cap{display:flex;gap:20px;align-items:flex-start;margin-top:26px;max-width:52ch}
+.detail-cap .rule{flex:0 0 46px;height:1px;background:var(--hair);margin-top:11px}
+.detail-cap p{font-size:14.5px;line-height:1.75;color:var(--muted)}
+
+/* ---------- 4 & 5 · Editorial pairs ---------- */
+.pair{
+  display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(32px,5vw,80px);
+  align-items:center;max-width:var(--maxw);margin:0 auto;padding:var(--gap) var(--pad) 0;
+}
+.pair.reverse{grid-template-columns:.75fr 1.25fr}
+.pair.reverse .fig{order:2}
+.fig{margin:0;overflow:hidden;background:var(--cream-2)}
+.fig img{width:100%;aspect-ratio:1.35/1;object-fit:cover;transition:transform 1.4s var(--ease)}
+.fig:hover img{transform:scale(1.03)}
+.pair-copy{display:flex;flex-direction:column;gap:20px}
+.pair-copy p:last-child{color:var(--muted);line-height:1.75;max-width:34ch;font-size:15.5px}
+
+/* ---------- 6 · Full bleed ---------- */
+.bleed{
+  position:relative;min-height:74svh;margin-top:var(--gap);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.bleed img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.bleed-scrim{position:absolute;inset:0;background:rgba(12,11,9,.44)}
+.bleed-h{position:relative;z-index:2;text-align:center;padding:0 var(--pad);color:#fff}
+.bleed-h em{color:#e8cf7a}
+
+/* ---------- 7 · Range ---------- */
+.range{max-width:var(--maxw);margin:0 auto;padding:var(--gap) var(--pad) 0}
+.range-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(16px,2.4vw,34px)}
+.range-grid figure{margin:0 0 18px;overflow:hidden;background:var(--cream-2)}
+.range-grid img{width:100%;aspect-ratio:1.3/1;object-fit:cover;transition:transform 1.3s var(--ease)}
+.range-grid article:hover img{transform:scale(1.04)}
+.range-grid h4{font-family:var(--serif);font-weight:400;font-size:clamp(18px,1.8vw,24px);margin:0 0 6px}
+.wt{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze)}
+
+/* ---------- 8 · Why — restored from the live site, restyled for cream ---------- */
+.why{max-width:var(--maxw);margin:0 auto;padding:var(--gap) var(--pad) 0}
+.why-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:clamp(26px,4vw,54px)}
+.why-list li{display:flex;gap:18px;align-items:flex-start}
+.why-list span{font-family:var(--serif);font-size:24px;color:var(--gold);line-height:1;min-width:38px}
+.why-list h4{font-family:var(--serif);font-weight:400;font-size:clamp(18px,1.9vw,25px);margin:0 0 7px}
+.why-list p{font-size:14.5px;line-height:1.7;color:var(--muted);max-width:40ch}
+
+/* ---------- 9 · Instagram — restored from the live site, restyled for cream ---------- */
+.insta{padding:var(--gap) 0 0}
+.insta-head{
+  display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:14px;
+  max-width:var(--maxw);margin:0 auto;padding:0 var(--pad);
+}
+.insta-head .label{margin:0}
+.follow{
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--bronze);
+  border-bottom:1px solid var(--hair);padding-bottom:3px;transition:color .3s;
+}
+.follow:hover{color:var(--gold)}
+.insta-strip{width:100%;overflow:hidden;margin-top:26px}
+.insta-track{display:flex;gap:16px;width:max-content;padding:0 var(--pad);animation:insta-scroll 42s linear infinite}
+.insta-track:hover{animation-play-state:paused}
+.ig{width:230px;height:230px;flex-shrink:0;overflow:hidden;background:var(--cream-2);position:relative}
+.ig img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
+.ig:hover img{transform:scale(1.06)}
+/* residual = one period minus 50% of track width, see js/demo2.js console note */
+@keyframes insta-scroll{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 8px))}}
+
+/* ---------- 10 · Visit ---------- */
+.visit{max-width:var(--maxw);margin:0 auto;padding:var(--gap) var(--pad) clamp(70px,9vw,120px)}
+.visit h2{margin-bottom:clamp(46px,6vw,88px)}
+.visit-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,6vw,100px)}
+.addr{font-family:var(--serif);font-size:19px;line-height:1.85;color:var(--ink)}
+.hours{margin-top:14px;font-size:13px;color:var(--muted);letter-spacing:.04em}
+.maplink{
+  display:inline-block;margin-top:20px;font-size:11.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--bronze);border-bottom:1px solid var(--hair);padding-bottom:3px;
+}
+.maplink:hover{border-color:var(--bronze)}
+.big-link{
+  display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+  font-family:var(--serif);font-size:clamp(19px,2.1vw,29px);font-weight:300;
+  padding:15px 0;border-bottom:1px solid var(--line);
+  font-variant-numeric:lining-nums tabular-nums;
+  transition:color .35s var(--ease),padding-left .35s var(--ease),border-color .35s var(--ease);
+}
+.big-link em{
+  font-style:normal;font-family:var(--sans);font-size:10.5px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--muted);white-space:nowrap;
+}
+.big-link:hover{color:var(--bronze);padding-left:8px;border-color:var(--hair)}
+
+footer{
+  display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  padding:30px var(--pad);border-top:1px solid var(--line);
+  font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+}
+footer a:hover{color:var(--bronze)}
+
+/* ---------- Responsive ---------- */
+@media(max-width:980px){
+  .statement{grid-template-columns:1fr;gap:44px}
+  .specs{grid-template-columns:repeat(2,1fr);gap:34px}
+  .pair,.pair.reverse{grid-template-columns:1fr;gap:30px}
+  .pair.reverse .fig{order:0}
+  .range-grid{grid-template-columns:repeat(2,1fr);gap:20px}
+  .why-list{grid-template-columns:1fr}
+  .visit-grid{grid-template-columns:1fr}
+  .detail img{aspect-ratio:1.7/1}
+}
+@media(max-width:560px){
+  .specs{grid-template-columns:1fr;gap:26px}
+  .range-grid{grid-template-columns:1fr}
+  .big-link{flex-direction:column;gap:4px}
+  footer{flex-direction:column;gap:10px}
+  .detail img{aspect-ratio:3/2}
+  .ig{width:170px;height:170px}
+}
+
+/* ---------- Reduced motion ---------- */
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rv{opacity:1 !important;transform:none !important;transition:none !important}
+  .rv-line .l>span{transform:none !important;transition:none !important}
+  .fig img,.range-grid img,.insta-track{transition:none !important;animation:none !important}
+}
